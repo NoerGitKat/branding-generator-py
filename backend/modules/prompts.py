@@ -5,6 +5,8 @@ import re
 
 def generate_branding_snippet(prompt: str) -> str:
     enriched_prompt = f"Generate branding snippet for {prompt}"
+    print(f"Prompt: {enriched_prompt}")
+
     response = openai.Completion.create(
         model="text-ada-001",
         max_tokens=10,
@@ -16,18 +18,21 @@ def generate_branding_snippet(prompt: str) -> str:
     branding_text = response["choices"][0]["text"]
 
     # Strip whitespace
-    branding_text.strip()
+    branding_text = branding_text.strip()
 
     # Add ... to truncated statements
     last_char = branding_text[-1]
     if last_char not in {".", "!", "?"}:
         branding_text += "..."
 
+    print(f"Result: {branding_text}")
+
     return branding_text
 
 
 def generate_keywords(prompt: str) -> List[str]:
     enriched_prompt = f"Generate branding keywords for {prompt}"
+    print(f"Prompt: {enriched_prompt}")
     response = openai.Completion.create(
         model="text-ada-001",
         max_tokens=10,
@@ -45,5 +50,7 @@ def generate_keywords(prompt: str) -> List[str]:
     keywords = re.split(",|\n|;|-", keywords_text)
     keywords = [keyword.lower().strip() for keyword in keywords]
     keywords = [keyword for keyword in keywords if len(keyword) > 0]
+
+    print(f"Result: {keywords}")
 
     return keywords
