@@ -1,6 +1,14 @@
+from os import getenv
 import openai
+from dotenv import load_dotenv
 from typing import List
 import re
+
+
+load_dotenv()
+
+openai.organization = getenv("OPENAI_ORG_ID")
+openai.api_key = getenv("OPENAI_API_KEY")
 
 
 def generate_branding_snippet(prompt: str) -> str:

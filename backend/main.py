@@ -1,21 +1,11 @@
-from os import getenv
-from dotenv import load_dotenv
-from modules import prompts, utils
-import openai
+from fastapi import FastAPI
+from api.routes import generate
 
-load_dotenv()
+# START COMMAND: uvicorn api:app --reload
+app = FastAPI()
 
-openai.organization = getenv("ORG_ID")
-openai.api_key = getenv("OPENAI_API_KEY")
+app.include_router(generate.router, prefix="/api",)
 
-
-def main():
-    user_input = utils.get_cli_input()
-
-    branding_snippet = prompts.generate_branding_snippet(user_input)
-    keywords = prompts.generate_keywords(user_input)
-
-    return
-
-
-main()
+@app.get("/")
+async def root():
+    return {"message": "Hello Bigger Applications!"}
