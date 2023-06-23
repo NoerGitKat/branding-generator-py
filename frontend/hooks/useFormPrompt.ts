@@ -1,7 +1,11 @@
+"use client"
 import { ChangeEvent, FormEvent, useState } from "react"
 
 function useFormPrompt() {
   const [prompt, setPrompt] = useState<string>("")
+  const [snippet, setSnippet] = useState<string>("")
+  const [keywords, setKeywords] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const getPrompt = function (event: ChangeEvent<HTMLInputElement>) {
     setPrompt(() => event.target.value)
@@ -9,19 +13,32 @@ function useFormPrompt() {
 
   const generateContent = async function (event: FormEvent) {
     event.preventDefault()
+    setIsLoading(true)
     try {
-      const response = await fetch(
+      const snippetRes = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/generate/snippet?prompt=${prompt}`
       )
-      const json = await response.json()
-
-      console.log("json is what", json)
+      const { snippet } = await snippetRes.json()
+      setSnippet(snippet)
     } catch (error) {
-      console.error(`Couldn't make API call! ${error}`)
+      console.error(`Couldn't make snippet API call! ${error}`)
     }
+
+    try {
+      const keywordsRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/generate/keywords?prompt=${prompt}`
+      )
+      const { keywords } = await keywordsRes.json()
+
+      setKeywords(keywords)
+    } catch (error) {
+      console.error(`Couldn't make keywords API call! ${error}`)
+    }
+    setIsLoading(false)
+    setPrompt("")
   }
 
-  return { prompt, generateContent, getPrompt }
+  return { prompt, generateContent, getPrompt, snippet, keywords, isLoading }
 }
 
 export default useFormPrompt
